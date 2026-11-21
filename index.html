@@ -454,7 +454,7 @@
 
     <script>
         (function () {
-            const STORAGE_KEY = "avouda_bladerunner_v7";
+            const STORAGE_KEY = "avouda_bladerunner_v8";
             const DEFAULT_VIDEO = "bg.mp4";
             const GLOW_PRESETS = {
                 white:   { rgb: "255, 255, 255" },
@@ -729,8 +729,17 @@
                 config.views = Number(config.views || 0) + 1;
                 if (viewCountEl) viewCountEl.textContent = Number(config.views).toLocaleString();
                 saveConfig();
+
+                // Unmute on user entry click
+                isMuted = false;
+                syncAudioUI();
+
                 if (bgVideo) {
-                    bgVideo.play().catch(() => {});
+                    bgVideo.play().catch(() => {
+                        isMuted = true;
+                        syncAudioUI();
+                        bgVideo.play().catch(() => {});
+                    });
                 }
                 startTypewriter();
             }
