@@ -32,14 +32,14 @@
             overflow: hidden;
         }
 
-        /* Full-screen Background Video & Canvas Layers */
+        /* Full-bleed video zoomed slightly to push letterbox bars off-screen */
         #bg-video {
             position: fixed;
             inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scale(1.12);
+            transform: scale(1.24);
             transform-origin: center center;
             z-index: 0;
             opacity: 0;
@@ -60,13 +60,13 @@
             pointer-events: none;
         }
 
-        /* Lighter vignette without heavy top/bottom bars or scanlines */
+        /* Clean, bright vignette with no horizontal lines */
         #bg-vignette {
             position: fixed;
             inset: 0;
             z-index: 2;
             pointer-events: none;
-            background: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.42) 100%);
+            background: radial-gradient(circle at 50% 35%, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.35) 100%);
         }
 
         #cursor-canvas {
@@ -113,8 +113,8 @@
 
         .name-glow {
             text-shadow:
-                0 0 calc(16px * var(--glow-strength)) rgba(var(--glow-rgb), 0.55),
-                0 0 calc(34px * var(--glow-strength)) rgba(var(--glow-rgb), 0.22);
+                0 0 calc(16px * var(--glow-strength)) rgba(var(--glow-rgb), 0.65),
+                0 0 calc(34px * var(--glow-strength)) rgba(var(--glow-rgb), 0.28);
         }
 
         .badge-glow {
@@ -128,7 +128,7 @@
         }
 
         .social-icon-glow {
-            filter: drop-shadow(0 0 calc(8px * var(--glow-strength)) rgba(var(--glow-rgb), 0.55));
+            filter: drop-shadow(0 0 calc(8px * var(--glow-strength)) rgba(var(--glow-rgb), 0.65));
             transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), filter 0.22s ease, opacity 0.22s ease;
         }
 
@@ -146,7 +146,7 @@
 
         .uid-pill {
             position: absolute;
-            bottom: calc(100% + 6px);
+            top: calc(100% + 6px);
             padding: 3px 10px;
             border-radius: 8px;
             background: rgba(18, 18, 22, 0.92);
@@ -158,7 +158,7 @@
             letter-spacing: 0.02em;
             white-space: nowrap;
             opacity: 0;
-            transform: translateY(5px) scale(0.95);
+            transform: translateY(-4px) scale(0.95);
             pointer-events: none;
             transition: opacity 0.18s ease, transform 0.18s ease;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
@@ -314,7 +314,8 @@
         </button>
     </div>
 
-    <main class="relative z-10 w-full h-full flex flex-col items-center justify-center px-4 text-center pointer-events-none">
+    <!-- Top-aligned floating profile block -->
+    <main class="relative z-10 w-full h-full flex flex-col items-center justify-start pt-6 sm:pt-8 px-4 text-center pointer-events-none">
         <div class="pointer-events-auto flex flex-col items-center max-w-xl w-full">
             <div class="uid-wrapper cursor-default">
                 <div id="display-uid" class="uid-pill">UID 1</div>
@@ -325,13 +326,13 @@
 
             <div id="badges-row" class="mt-2 flex items-center justify-center gap-2.5"></div>
 
-            <div class="mt-4 min-h-[26px] flex items-center justify-center px-2">
+            <div class="mt-3 min-h-[24px] flex items-center justify-center px-2">
                 <p class="text-[14px] sm:text-[15px] font-semibold text-white/95 tracking-[-0.01em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
                     <span id="typewriter-text"></span><span class="cursor-blink text-white">|</span>
                 </p>
             </div>
 
-            <div id="socials-row" class="mt-5 flex items-center justify-center gap-4 flex-wrap"></div>
+            <div id="socials-row" class="mt-4 flex items-center justify-center gap-4 flex-wrap"></div>
         </div>
     </main>
 
@@ -340,7 +341,7 @@
             <svg class="w-4 h-4 text-white/85" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
             </svg>
-            <span id="view-count">28,000</span>
+            <span id="view-count">28,005</span>
         </div>
     </div>
 
@@ -452,7 +453,7 @@
 
     <script>
         (function () {
-            const STORAGE_KEY = "avouda_bladerunner_v4";
+            const STORAGE_KEY = "avouda_bladerunner_v5";
             const GLOW_PRESETS = {
                 white:   { rgb: "255, 255, 255" },
                 cyan:    { rgb: "103, 232, 249" },
@@ -482,7 +483,7 @@
                 socials: {
                     discord: "avouda"
                 },
-                views: 28000
+                views: 28005
             };
 
             const BADGE_DEFS = {
