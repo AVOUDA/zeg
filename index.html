@@ -452,7 +452,7 @@
 
     <script>
         (function () {
-            const STORAGE_KEY = "avouda_bladerunner_v3";
+            const STORAGE_KEY = "avouda_bladerunner_v4";
             const GLOW_PRESETS = {
                 white:   { rgb: "255, 255, 255" },
                 cyan:    { rgb: "103, 232, 249" },
@@ -470,7 +470,7 @@
                     "more human than human."
                 ],
                 glowPreset: "white",
-                videoUrl: "Nightcall_x_Blade_Runner____bl_1795205883547_HD.mp4",
+                videoUrl: "bg.mp4",
                 glowStrength: 105,
                 cursorTrail: true,
                 badges: {
@@ -564,7 +564,8 @@
             function applyVideoSource() {
                 if (!bgVideo) return;
                 if (config.videoUrl && config.videoUrl.trim()) {
-                    const targetSrc = encodeURI(config.videoUrl.trim());
+                    const rawSrc = config.videoUrl.trim();
+                    const targetSrc = rawSrc.startsWith("blob:") || rawSrc.startsWith("http") ? rawSrc : encodeURI(rawSrc);
                     if (bgVideo.getAttribute("src") !== targetSrc) {
                         bgVideo.setAttribute("src", targetSrc);
                         bgVideo.load();
