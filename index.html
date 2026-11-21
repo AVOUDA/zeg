@@ -283,7 +283,8 @@
         <span class="click-me-text">Click me...</span>
     </div>
 
-    <video id="bg-video" src="bg.mp4" autoplay loop muted playsinline preload="auto"></video>
+    <!-- Preloads cleanly without starting until "Click me..." is clicked -->
+    <video id="bg-video" src="bg.mp4" loop muted playsinline preload="auto"></video>
     <canvas id="bg-canvas"></canvas>
     <div id="bg-vignette"></div>
     <canvas id="cursor-canvas"></canvas>
@@ -342,7 +343,7 @@
             <svg class="w-4 h-4 text-white/85" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
             </svg>
-            <span id="view-count">28,011</span>
+            <span id="view-count">28,014</span>
         </div>
     </div>
 
@@ -454,7 +455,7 @@
 
     <script>
         (function () {
-            const STORAGE_KEY = "avouda_bladerunner_v8";
+            const STORAGE_KEY = "avouda_bladerunner_v9";
             const DEFAULT_VIDEO = "bg.mp4";
             const GLOW_PRESETS = {
                 white:   { rgb: "255, 255, 255" },
@@ -467,14 +468,14 @@
                 username: "AVOUDA",
                 uid: "1",
                 bioLines: [
+                    "quiet steps in dark coats, lost in the rain.",
+                    "low profile, cold focus, zero noise.",
                     "quiet hours fade like neon reflections in wet asphalt.",
                     "old memories dissolve as midnight rain washes the glass.",
                     "two shadows passing under amber lamps before dawn.",
                     "every frame drifts away until only static remains.",
                     "cold air, distant sirens, and a memory half-forgotten.",
-                    "chasing a warm signal through a city built of night.",
-                    "nothing stays forever once the lights burn out.",
-                    "watching footsteps vanish behind a curtain of fog."
+                    "nothing stays forever once the lights burn out."
                 ],
                 glowPreset: "white",
                 videoUrl: DEFAULT_VIDEO,
@@ -489,7 +490,7 @@
                 socials: {
                     discord: "avouda"
                 },
-                views: 28011
+                views: 28014
             };
 
             const BADGE_DEFS = {
@@ -567,6 +568,8 @@
             const resetBtn = document.getElementById("reset-btn");
             const toastEl = document.getElementById("toast");
 
+            let entered = false;
+
             function showToast(msg) {
                 if (!toastEl) return;
                 toastEl.textContent = msg;
@@ -605,13 +608,24 @@
                     bgVideo.setAttribute("src", targetSrc);
                     bgVideo.load();
                 }
-                bgVideo.play().catch(() => {});
+                // Keep video paused at 0:00 until user clicks "Click me..."
+                if (!entered) {
+                    bgVideo.pause();
+                    try { bgVideo.currentTime = 0; } catch (_) {}
+                } else {
+                    bgVideo.play().catch(() => {});
+                }
             }
 
             if (bgVideo) {
                 bgVideo.addEventListener("canplay", () => {
                     bgVideo.classList.add("active");
-                    bgVideo.play().catch(() => {});
+                    if (!entered) {
+                        bgVideo.pause();
+                        try { bgVideo.currentTime = 0; } catch (_) {}
+                    } else {
+                        bgVideo.play().catch(() => {});
+                    }
                 });
                 bgVideo.addEventListener("error", () => {
                     if (bgVideo.getAttribute("src") !== DEFAULT_VIDEO) {
@@ -711,7 +725,7 @@
                 muteBtn.addEventListener("click", () => {
                     isMuted = !isMuted;
                     syncAudioUI();
-                    if (bgVideo) bgVideo.play().catch(() => {});
+                    if (entered && bgVideo) bgVideo.play().catch(() => {});
                 });
             }
 
@@ -721,7 +735,6 @@
                 });
             }
 
-            let entered = false;
             function enterSite() {
                 if (entered) return;
                 entered = true;
@@ -730,11 +743,12 @@
                 if (viewCountEl) viewCountEl.textContent = Number(config.views).toLocaleString();
                 saveConfig();
 
-                // Unmute on user entry click
                 isMuted = false;
                 syncAudioUI();
 
                 if (bgVideo) {
+                    try { bgVideo.currentTime = 0; } catch (_) {}
+                    bgVideo.classList.add("active");
                     bgVideo.play().catch(() => {
                         isMuted = true;
                         syncAudioUI();
@@ -819,7 +833,7 @@
                         bgVideo.setAttribute("src", blobUrl);
                         bgVideo.load();
                         bgVideo.classList.add("active");
-                        bgVideo.play().catch(() => {});
+                        if (entered) bgVideo.play().catch(() => {});
                     }
                     showToast("Previewing local file (reverts to bg.mp4 on reload)");
                 });
@@ -855,7 +869,7 @@
                     saveConfig();
                     renderAll();
                     lineIdx = 0; charIdx = 0; deleting = false;
-                    startTypewriter();
+                    if (entered) startTypewriter();
                     if (drawer) drawer.classList.add("translate-x-full");
                     showToast("Changes saved");
                 });
