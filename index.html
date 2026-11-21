@@ -305,7 +305,8 @@
         </div>
     </div>
 
-    <div class="fixed top-4 right-4 z-30">
+    <!-- Customize button is hidden; toggle drawer via Alt + P -->
+    <div class="fixed top-4 right-4 z-30 hidden">
         <button id="open-customizer-btn" type="button" title="Customize Profile" class="hud-pill h-9 px-3 rounded-xl flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-white opacity-45 hover:opacity-100 transition duration-200">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
@@ -353,7 +354,7 @@
         <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between">
             <div>
                 <h2 class="text-sm font-bold text-white tracking-wide">Profile Studio</h2>
-                <p class="text-[11px] text-white/45">Personalize visuals, media &amp; links</p>
+                <p class="text-[11px] text-white/45">Shortcut: Alt + P · Personalize visuals &amp; links</p>
             </div>
             <button id="close-customizer-btn" type="button" class="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -377,7 +378,7 @@
                 </div>
                 <div>
                     <label class="block text-white/70 mb-1">Typewriter Quotes (one per line)</label>
-                    <textarea id="input-bio" rows="3" class="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-white/40 leading-relaxed"></textarea>
+                    <textarea id="input-bio" rows="5" class="w-full px-3 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-white/40 leading-relaxed"></textarea>
                 </div>
             </div>
 
@@ -453,7 +454,7 @@
 
     <script>
         (function () {
-            const STORAGE_KEY = "avouda_bladerunner_v6";
+            const STORAGE_KEY = "avouda_bladerunner_v7";
             const DEFAULT_VIDEO = "bg.mp4";
             const GLOW_PRESETS = {
                 white:   { rgb: "255, 255, 255" },
@@ -466,10 +467,14 @@
                 username: "AVOUDA",
                 uid: "1",
                 bioLines: [
-                    "all those moments will be lost in time, like tears in rain.",
-                    "within cells interlinked.",
-                    "a system of cells interlinked within cells interlinked.",
-                    "more human than human."
+                    "quiet hours fade like neon reflections in wet asphalt.",
+                    "old memories dissolve as midnight rain washes the glass.",
+                    "two shadows passing under amber lamps before dawn.",
+                    "every frame drifts away until only static remains.",
+                    "cold air, distant sirens, and a memory half-forgotten.",
+                    "chasing a warm signal through a city built of night.",
+                    "nothing stays forever once the lights burn out.",
+                    "watching footsteps vanish behind a curtain of fog."
                 ],
                 glowPreset: "white",
                 videoUrl: DEFAULT_VIDEO,
@@ -510,7 +515,6 @@
 
             function normalizeVideoUrl(url) {
                 const trimmed = (url || "").trim();
-                // Blob URLs expire on reload, so always fall back to bg.mp4
                 if (!trimmed || trimmed.startsWith("blob:")) return DEFAULT_VIDEO;
                 return trimmed;
             }
@@ -575,6 +579,24 @@
                 }, 1900);
             }
 
+            function toggleDrawer() {
+                if (!drawer) return;
+                const isClosed = drawer.classList.contains("translate-x-full");
+                if (isClosed) {
+                    populateDrawer();
+                    drawer.classList.remove("translate-x-full");
+                } else {
+                    drawer.classList.add("translate-x-full");
+                }
+            }
+
+            document.addEventListener("keydown", (e) => {
+                if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === "p") {
+                    e.preventDefault();
+                    toggleDrawer();
+                }
+            });
+
             function applyVideoSource(forceSrc) {
                 if (!bgVideo) return;
                 const rawSrc = forceSrc || normalizeVideoUrl(config.videoUrl);
@@ -592,7 +614,6 @@
                     bgVideo.play().catch(() => {});
                 });
                 bgVideo.addEventListener("error", () => {
-                    // If a custom URL fails, fall back to bg.mp4
                     if (bgVideo.getAttribute("src") !== DEFAULT_VIDEO) {
                         config.videoUrl = DEFAULT_VIDEO;
                         saveConfig();
